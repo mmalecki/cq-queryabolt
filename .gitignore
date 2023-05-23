@@ -1,3 +1,4 @@
-# Ignore common OpenSCAD output file formats
+# Ignore common 3D output file formats
 *.3mf
 *.stl
+*.step
