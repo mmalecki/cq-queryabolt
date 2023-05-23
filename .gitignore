@@ -2,3 +2,6 @@
 *.3mf
 *.stl
 *.step
+
+venv/
+__pycache__

@@ -1,0 +1,13 @@
+[tool.poetry]
+name = "queryabolt"
+version = "0.0.1"
+description = "An ergonomic way to create nutcatches, screw holes and countersinks in CadQuery"
+authors = ["Maciej Małecki <me@mmalecki.com>"]
+readme = "README.md"
+
+[tool.poetry.group.dev.dependencies]
+cadquery = { git = "https://github.com/CadQuery/cadquery", python = ">= 3.8" }
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
