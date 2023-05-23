@@ -19,40 +19,58 @@ b_a = 22.5
 b_b = 50
 b_h = 10
 
+c_d = 10
+c_h = 10
+
+# This function returns a rectangle on the current workplane, optionally tagging it.
+# This rectangle is later used to construct a mouting interface.
 def m(workplane, tag=None):
     ret = workplane.rect(10, 10, forConstruction = True)
     if tag is not None:
         ret.tag(tag)
     return ret.vertices()
 
+# Part A
 a = Workplane().box(a_a, a_b, a_h)
 
+# Create nutcatches on the "bottom" of the part.
 a = m(a.faces("<Z").workplane()).nutcatchParallel("M3")
-a = m(a.faces(">Z").workplane(), "mate").hole(3)
+# And holes leading to them. Tag the rectangle we use for constructing the mounting
+# as a mating face.
+a = m(a.faces(">Z").workplane(), "mate_b").hole(3)
 
-b = Workplane(origin=(a_a + 10, 0, 0)).box(b_a, b_b, b_h)
+# Part B
+b = Workplane().box(b_a, b_b, b_h)
 
-b.faces("<Y").workplane().tag("mate_c")
+# Grab the <Y face of the part, tag it as the part mating with C. Create a workplane
+# 10 mm underneath, tag it as the workplane we'll be mounting C on.
+# The 10 mm would usually be driven by design requirements.
+b.faces("<Y").tag("mate_c").workplane(-10).tag("mount_c").end()
+m(b.faces(">Z").workplane(), "mate_a")
 b = m(b.faces("<Z").workplane().center(0, -10)).cboreHole(3, 6, 5)
-m(b.faces(">Z").workplane(), "mate")
 
-# Without the `transformed`, this part would be unprintable:
-b = b.workplaneFromTagged("mate_c").transformed((0, 0, 180)).workplane(-10).nutcatchSidecut("M4")
+# Sidecut nutcatches can be rotated if desired:
+b = b.workplaneFromTagged("mount_c").transformed((0, 0, 180)).nutcatchSidecut("M4")
 
-n = Workplane().box(a_a, a_b, a_h)
-n = n.faces(">Z").workplane().pushPoints([(5, 0), (-5, 0)]).cboreHole(3, 6, 5)
-n = n.faces("<Z").workplane(-2).pushPoints([(5, 0), (-5, 0)]).nutcatchSidecut("M3")
+# Part C
+c = Workplane().circle(c_d).extrude(c_h)
+c = c.faces(">Z").workplane().cboreHole(4, 8, 5)
+c.faces("<Z").tag("mate_b").end()
 
 assy = (cq.Assembly()
             .add(a, name = "a")
             .add(b, name = "b")
-            .constrain("a?mate", "b?mate", "Point")
+            .add(c, name = "c")
+
+            .constrain("a?mate_b", "b?mate_a", "Point")
             .constrain("a@faces@>Z", "b@faces@>Z", "Axis")
             .constrain("a@edges@|Y", "b@edges@|Y", "Axis")
+
+            .constrain("c?mate_b", "b?mate_c", "Plane")
 )
 assy.solve()
 
-show_object(a, name="a", options=dict(alpha=0.3))
-show_object(b, name="b", options=dict(alpha=0.3))
-show_object(n.translate((a_a + a_b + 20, 0, 0)), name="nut", options=dict(alpha=0.0))
+show_object(a.translate((a_a + 10, 0)), name="a", options=dict(alpha=0.3))
+show_object(b.translate((2 * a_a + 20, 0, 0)), name="b", options=dict(alpha=0.3))
+show_object(c.translate((2 * a_a + a_b + 30, 0, 0)), name="c", options=dict(alpha=0.3))
 show_object(assy, name="assembly", options=dict(alpha=0.5))
