@@ -51,6 +51,7 @@ b = m(b.faces("<Z").workplane().center(0, -10)).cboreHole(3, 6, 5)
 
 # Sidecut nutcatches can be rotated if desired:
 b = b.workplaneFromTagged("mount_c").transformed((0, 0, 180)).nutcatchSidecut("M4")
+b = b.faces("<Y").hole(4, depth = 10)
 
 # Part C
 c = Workplane().circle(c_d).extrude(c_h)
