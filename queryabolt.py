@@ -3,12 +3,17 @@ import math
 import pathlib
 import cadquery as cq
 
+DEFAULT_HEAD_DIAMETER_CLEARANCE = 0.1
 DEFAULT_NUT_KIND = "hexagon"
+DEFAULT_BOLT_KIND = "headless"
 
 _dataDir = pathlib.Path(__file__).parent.resolve()
 
 with open(pathlib.PurePath(_dataDir, 'nuts.json')) as file:
   nuts = json.load(file)
+
+with open(pathlib.PurePath(_dataDir, 'bolts.json')) as file:
+  bolts = json.load(file)
 
 def _hexInscribedCircle (w):
     return 2 * w / math.sqrt(3)
@@ -37,15 +42,38 @@ def nutData(options = None, kind = DEFAULT_NUT_KIND):
     else:
         return options
 
+def boltData(options = None, kind = DEFAULT_BOLT_KIND):
+    if options is None:
+        return bolts
+    if isinstance(options, str):
+        return bolts[options][kind]
+    else:
+        return options
+
 class WorkplaneMixin:
     def nutcatchParallel(self, options, kind = DEFAULT_NUT_KIND, heightClearance = 0):
         data = nutData(options, kind)
         return self.placeSketch(_nutSketch(data)).cutBlind(-(data["thickness"] + heightClearance))
 
-    def nutcatchSidecut(self, options, kind = DEFAULT_NUT_KIND, heightClearance = 0):
+    def nutcatchSidecut(self, options, kind = DEFAULT_NUT_KIND, heightClearance = 0, length = None):
         data = nutData(options, kind)
-        l = self.largestDimension()
+
+        if length is None:
+            length = self.largestDimension()
+
         return (self
-                    .placeSketch(_nutSideSketch(data, l))
+                    .placeSketch(_nutSideSketch(data, length))
                     .cutBlind(data["thickness"] + heightClearance)
         )
+
+    def boltHole(self, bolt, depth = None):
+        data = boltData(bolt)
+        return self.hole(data["diameter"], depth)
+
+    def cboreBoltHole(self, bolt, depth = None):
+        data = boltData(bolt, "socket_head")
+        return self.cboreHole(data["diameter"], data["head_diameter"], cboreDepth = data["head_length"], depth = depth)
+
+    def cskBoltHole(self, bolt, depth = None):
+        data = boltData(bolt, "countersunk")
+        return self.cskHole(data["diameter"], data["head_diameter"], cskAngle = 90, depth = depth)
