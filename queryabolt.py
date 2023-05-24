@@ -70,9 +70,10 @@ class WorkplaneMixin:
         data = boltData(bolt)
         return self.hole(data["diameter"], depth)
 
-    def cboreBoltHole(self, bolt, depth = None):
+    def cboreBoltHole(self, bolt, depth = None, headDiameterClearance = DEFAULT_HEAD_DIAMETER_CLEARANCE):
         data = boltData(bolt, "socket_head")
-        return self.cboreHole(data["diameter"], data["head_diameter"], cboreDepth = data["head_length"], depth = depth)
+        cboreD = data["head_diameter"] + headDiameterClearance
+        return self.cboreHole(data["diameter"], cboreD, cboreDepth = data["head_length"], depth = depth)
 
     def cskBoltHole(self, bolt, depth = None):
         data = boltData(bolt, "countersunk")
