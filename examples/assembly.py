@@ -46,8 +46,8 @@ b = Workplane().box(b_a, b_b, b_h)
 # 10 mm underneath, tag it as the workplane we'll be mounting C on.
 # The 10 mm would usually be driven by design requirements.
 b.faces("<Y").tag("mate_c").workplane(-10).tag("mount_c").end()
-m(b.faces(">Z").workplane(), "mate_a")
 b = m(b.faces("<Z").workplane().center(0, -10)).cboreHole(3, 6, 5)
+m(b.faces(">Z").workplane(), "mate_a")
 
 # Sidecut nutcatches can be rotated if desired:
 b = b.workplaneFromTagged("mount_c").transformed((0, 0, 180)).nutcatchSidecut("M4")
