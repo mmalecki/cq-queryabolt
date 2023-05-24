@@ -38,14 +38,14 @@ def nutData(options = None, kind = DEFAULT_NUT_KIND):
         return options
 
 class WorkplaneMixin:
-    def nutcatchParallel(self, options, kind = DEFAULT_NUT_KIND, height_clearance = 0):
+    def nutcatchParallel(self, options, kind = DEFAULT_NUT_KIND, heightClearance = 0):
         data = nutData(options, kind)
-        return self.placeSketch(_nutSketch(data)).cutBlind(-data["thickness"])
+        return self.placeSketch(_nutSketch(data)).cutBlind(-(data["thickness"] + heightClearance))
 
-    def nutcatchSidecut(self, options, kind = DEFAULT_NUT_KIND, height_clearance = 0):
+    def nutcatchSidecut(self, options, kind = DEFAULT_NUT_KIND, heightClearance = 0):
         data = nutData(options, kind)
         l = self.largestDimension()
         return (self
                     .placeSketch(_nutSideSketch(data, l))
-                    .cutBlind(data["thickness"] + height_clearance)
+                    .cutBlind(data["thickness"] + heightClearance)
         )
