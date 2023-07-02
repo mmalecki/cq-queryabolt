@@ -41,4 +41,4 @@ result = result.center(10, 0).nutcatchSidecut("M3")
 result = result.workplaneFromTagged("side").center(-5, -h / 2 + 4).boltHole("M3", depth = nutcatchSideOffset)
 result = result.center(10, 0).boltHole("M3", depth = nutcatchSideOffset)
 
-show_object(result, name="simple", options=dict(alpha=0.3))
+show_object(result, name="simple", options=dict(alpha=0))
