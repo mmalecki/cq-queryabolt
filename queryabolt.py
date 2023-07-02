@@ -2,10 +2,15 @@ import json
 import math
 import pathlib
 import cadquery as cq
+from typing import Union, Optional
 
 DEFAULT_HEAD_DIAMETER_CLEARANCE = 0.1
 DEFAULT_NUT_KIND = "hexagon"
 DEFAULT_BOLT_KIND = "headless"
+
+"""Either a string describing a fastener (e.g. `"M3"`), or an object containing all
+the necessary fastener properties."""
+FastenerSpec = Union[str, object]
 
 _dataDir = pathlib.Path(__file__).parent.resolve()
 
@@ -51,30 +56,66 @@ def boltData(options = None, kind = DEFAULT_BOLT_KIND):
         return options
 
 class WorkplaneMixin:
-    def nutcatchParallel(self, options, kind = DEFAULT_NUT_KIND, heightClearance = 0):
+    """Mixin for cadquery.Workplane containing cq_queryabolt methods."""
+
+    def nutcatchParallel(self, options: FastenerSpec, kind = DEFAULT_NUT_KIND, heightClearance = 0.0):
+        """Make a parallel (surface) nutcatch
+
+        Args:
+            options (str): name of the nut (e.g. `"M3"`)
+            kind (str, optional): kind of the nut (e.g. `"hexagon"`). Defaults to `"hexagon"`.
+            heightClearance (float, optional): height clearance for the nut. Defaults to 0.
+        """
         data = nutData(options, kind)
         return self.placeSketch(_nutSketch(data)).cutBlind(-(data["thickness"] + heightClearance))
 
-    def nutcatchSidecut(self, options, kind = DEFAULT_NUT_KIND, heightClearance = 0, length = None):
+    def nutcatchSidecut(self, options: FastenerSpec, kind = DEFAULT_NUT_KIND, heightClearance = 0.0, depth: Optional[float] = None):
+        """Make a side-cut nutcatch
+
+        Args:
+            options (str): name of the nut (e.g. `"M3"`)
+            kind (str, optional): kind of the nut (e.g. `"hexagon"`). Defaults to `"hexagon"`.
+            heightClearance (float >= 0, optional): additional height clearance for the nut. Defaults to 0.
+            depth (float > 0 or None to cut through the entire part): how deep to make the sidecut. Defaults to None.
+        """
         data = nutData(options, kind)
 
-        if length is None:
-            length = self.largestDimension()
+        if depth is None:
+            depth = self.largestDimension()
 
         return (self
-                    .placeSketch(_nutSideSketch(data, length))
+                    .placeSketch(_nutSideSketch(data, depth))
                     .cutBlind(data["thickness"] + heightClearance)
         )
 
-    def boltHole(self, bolt, depth = None):
+    def boltHole(self, bolt: FastenerSpec, depth: Optional[float] = None):
+        """Make a bolt hole (`cadquery.Workplane.hole` for named fasteners)
+
+        Args:
+            bolt (str): name of the bolt (e.g. `"M3"`)
+            depth (float > 0 or None to cut through the entire part): how deep to make the hole
+        """
         data = boltData(bolt)
         return self.hole(data["diameter"], depth)
 
-    def cboreBoltHole(self, bolt, depth = None, headDiameterClearance = DEFAULT_HEAD_DIAMETER_CLEARANCE):
+    def cboreBoltHole(self, bolt: FastenerSpec, depth: Optional[float] = None, headClearance = DEFAULT_HEAD_DIAMETER_CLEARANCE):
+        """Make a counterbored hole (`cadquery.Workplane.cboreHole` for named fasteners)
+
+        Args:
+            bolt (str): name of the bolt (e.g. `"M3"`)
+            depth (float > 0 or None to cut through the entire part): how deep to make the hole
+            headClearanace (float >= 0, optional): additional bolt head clearance. Defaults to 0.1.
+        """
         data = boltData(bolt, "socket_head")
-        cboreD = data["head_diameter"] + headDiameterClearance
+        cboreD = data["head_diameter"] + headClearance
         return self.cboreHole(data["diameter"], cboreD, cboreDepth = data["head_length"], depth = depth)
 
-    def cskBoltHole(self, bolt, depth = None):
+    def cskBoltHole(self, bolt: FastenerSpec, depth: Optional[float] = None):
+        """Make a countersunk hole (`cadquery.Workplane.cskHole` for named fasteners)
+
+        Args:
+            bolt (str): name of the bolt (e.g. `"M3"`)
+            depth (float > 0 or None to cut through the entire part): how deep to make the hole
+        """
         data = boltData(bolt, "countersunk")
         return self.cskHole(data["diameter"], data["head_diameter"], cskAngle = 90, depth = depth)
