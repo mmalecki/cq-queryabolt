@@ -1,4 +1,4 @@
-# queryabolt
+# cq-queryabolt
 A quick way to create nutcatches, screw holes and countersinks in CadQuery, according to fastener standards.
 
 ![Nutcatches, screw holes and countersinks](docs/img/simple.png).
@@ -7,6 +7,7 @@ A quick way to create nutcatches, screw holes and countersinks in CadQuery, acco
 
 ## Usage
 
+To create a simple box with a bolt hole and a nutcatch:
 ```py
 import queryabolt
 import cadquery as cq
@@ -24,6 +25,8 @@ result = result.faces(">Z").workplane().boltHole("M3")
 
 show_object(result, name="simple")
 ```
+
+Or check out the example [showcasing all the features](./examples/simple.py), or [using a `cadquery.Assembly`](./examples/assembly.py).
 
 ## API
 
@@ -72,7 +75,7 @@ Args:
 * The [authors](https://github.com/boltsparts/boltsparts/graphs/contributors) of the [BOLTS](https://github.com/boltsparts/boltsparts) library
 
 ## Prior work
-The following turned out too verbose for the simple spectrum of my projects:
+The following turned out too verbose for the simpler end of the spectrum of my projects:
 * [`cqparts_fasteners`](https://cqparts.github.io/cqparts/doc/cqparts_fasteners/index.html)
 * [`cq_warehouse`'s `fastener` module](https://cq-warehouse.readthedocs.io/en/latest/fastener.html)
 
