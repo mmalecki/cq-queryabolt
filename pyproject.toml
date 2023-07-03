@@ -1,9 +1,10 @@
 [tool.poetry]
 name = "cq-queryabolt"
-version = "0.0.1"
+version = "0.0.1-1"
 description = "A quick way to create nutcatches, screw holes and countersinks in CadQuery, according to fastener standards"
 authors = ["Maciej Małecki <me@mmalecki.com>"]
 readme = "README.md"
+include = ["nuts.json", "bolts.json"]
 
 [tool.poetry.group.dev.dependencies]
 cadquery = { git = "https://github.com/CadQuery/cadquery", python = ">= 3.8" }
