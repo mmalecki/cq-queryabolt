@@ -5,6 +5,10 @@ A quick way to create nutcatches, screw holes and countersinks in CadQuery, acco
 
 ## Requirements and installation
 
+```py
+poetry add cq-queryabolt
+```
+
 ## Usage
 
 To create a simple box with a bolt hole and a nutcatch:
