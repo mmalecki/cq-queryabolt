@@ -2,7 +2,7 @@
 
 [[package]]
 name = "cadquery"
-version = "2.3.0dev"
+version = "2.4.0dev"
 description = ""
 optional = false
 python-versions = ">=3.8"
@@ -17,7 +17,7 @@ ipython = ["ipython"]
 type = "git"
 url = "https://github.com/CadQuery/cadquery"
 reference = "HEAD"
-resolved_reference = "0fc683c33f480f8a458c4ec5a8f7346066ab23b4"
+resolved_reference = "ecadff2cd16090a047d5a13e3e468f2131e5170e"
 
 [metadata]
 lock-version = "2.0"
