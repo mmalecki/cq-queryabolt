@@ -1,7 +1,7 @@
-import queryabolt
+import cq_queryabolt
 import cadquery as cq
 
-class Workplane(queryabolt.WorkplaneMixin, cq.Workplane):
+class Workplane(cq_queryabolt.WorkplaneMixin, cq.Workplane):
     pass
 
 a = 50
