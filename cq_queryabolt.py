@@ -4,6 +4,7 @@ import pathlib
 import cadquery as cq
 from typing import Union, Optional
 
+DEFAULT_CLEARANCE = 0.0
 DEFAULT_HEAD_DIAMETER_CLEARANCE = 0.1
 DEFAULT_NUT_KIND = "hexagon"
 DEFAULT_BOLT_KIND = "headless"
@@ -88,34 +89,37 @@ class WorkplaneMixin:
                     .cutBlind(data["thickness"] + heightClearance)
         )
 
-    def boltHole(self, bolt: FastenerSpec, depth: Optional[float] = None):
+    def boltHole(self, bolt: FastenerSpec, depth: Optional[float] = None, clearance = DEFAULT_CLEARANCE):
         """Make a bolt hole (`cadquery.Workplane.hole` for named fasteners)
 
         Args:
             bolt (str): name of the bolt (e.g. `"M3"`)
             depth (float > 0 or None to cut through the entire part): how deep to make the hole
+            clearance (float >= 0, optional): additional bolt clearance. Defaults to 0.
         """
         data = boltData(bolt)
-        return self.hole(data["diameter"], depth)
+        return self.hole(data["diameter"] + clearance, depth)
 
-    def cboreBoltHole(self, bolt: FastenerSpec, depth: Optional[float] = None, headClearance = DEFAULT_HEAD_DIAMETER_CLEARANCE):
+    def cboreBoltHole(self, bolt: FastenerSpec, depth: Optional[float] = None, clearance = DEFAULT_CLEARANCE, headClearance = DEFAULT_HEAD_DIAMETER_CLEARANCE, cboreDepth: Optional[float] = None):
         """Make a counterbored hole (`cadquery.Workplane.cboreHole` for named fasteners)
 
         Args:
             bolt (str): name of the bolt (e.g. `"M3"`)
             depth (float > 0 or None to cut through the entire part): how deep to make the hole
-            headClearanace (float >= 0, optional): additional bolt head clearance. Defaults to 0.1.
+            clearance (float >= 0, optional): additional bolt clearance. Defaults to 0.
+            headClearance (float >= 0, optional): additional bolt head clearance. Defaults to 0.1.
         """
         data = boltData(bolt, "socket_head")
         cboreD = data["head_diameter"] + headClearance
-        return self.cboreHole(data["diameter"], cboreD, cboreDepth = data["head_length"], depth = depth)
+        return self.cboreHole(data["diameter"] + clearance, cboreD, cboreDepth = cboreDepth if cboreDepth is not None else data["head_length"], depth = depth)
 
-    def cskBoltHole(self, bolt: FastenerSpec, depth: Optional[float] = None):
+    def cskBoltHole(self, bolt: FastenerSpec, depth: Optional[float] = None, clearance = DEFAULT_CLEARANCE):
         """Make a countersunk hole (`cadquery.Workplane.cskHole` for named fasteners)
 
         Args:
             bolt (str): name of the bolt (e.g. `"M3"`)
             depth (float > 0 or None to cut through the entire part): how deep to make the hole
+            clearance (float >= 0, optional): additional bolt clearance. Defaults to 0.
         """
         data = boltData(bolt, "countersunk")
-        return self.cskHole(data["diameter"], data["head_diameter"], cskAngle = 90, depth = depth)
+        return self.cskHole(data["diameter"] + clearance, data["head_diameter"], cskAngle = 90, depth = depth)
