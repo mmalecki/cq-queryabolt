@@ -7,7 +7,8 @@ const path = process.env.BOLTS_PATH || 'vendor/BOLTS'
 const output = process.env.DATA_OUTPUT_PATH || '.'
 
 const nuts = yaml.parse(fs.readFileSync(`${path}/data/nut.blt`, 'utf8'))
-const bolts = yaml.parse(fs.readFileSync(`${path}/data/hex_socket.blt`, 'utf8'))
+const hexsocket_bolts = yaml.parse(fs.readFileSync(`${path}/data/hex_socket.blt`, 'utf8'))
+const hexhead_bolts = yaml.parse(fs.readFileSync(`${path}/data/hex.blt`, 'utf8'))
 
 const processClass = (spec, id, parameterMappings) => {
   const class_ = spec.classes.find(c => c.id == id)
@@ -44,18 +45,23 @@ const nutClasses = {
 const defaultNutClass = 'hexagon'
 
 const boltClasses = {
-  'headless': processClass(bolts, 'hexsocketheadcap', {
+  'headless': processClass(hexsocket_bolts, 'hexsocketheadcap', {
     diameter: 'd1',
   }),
-  'socket_head': processClass(bolts, 'hexsocketheadcap', {
+  'socket_head': processClass(hexsocket_bolts, 'hexsocketheadcap', {
     diameter: 'd1',
     head_diameter: 'd2',
     head_length: 'k'
   }),
-  'countersunk': processClass(bolts, 'hexsocketcountersunk', {
+  'countersunk': processClass(hexsocket_bolts, 'hexsocketcountersunk', {
     diameter: 'd1',
     head_diameter: 'd2',
     head_length: 'k_max'
+  }),
+  'hex_head': processClass(hexhead_bolts, 'hexbolt1', {
+    diameter: 'd1',
+    head_diameter: 'e',
+    head_length: 'k'
   }),
 }
 const defaultBoltClass = 'sockethead'
