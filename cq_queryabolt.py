@@ -110,7 +110,7 @@ class WorkplaneMixin:
             headClearance (float >= 0, optional): additional bolt head clearance. Defaults to 0.1.
         """
         data = boltData(bolt, "socket_head")
-        cboreD = data["head_diameter"] + headClearance
+        cboreD = data["head_diameter"] + clearance + headClearance
         return self.cboreHole(data["diameter"] + clearance, cboreD, cboreDepth = cboreDepth if cboreDepth is not None else data["head_length"], depth = depth)
 
     def cskBoltHole(self, bolt: FastenerSpec, depth: Optional[float] = None, clearance = DEFAULT_CLEARANCE):
