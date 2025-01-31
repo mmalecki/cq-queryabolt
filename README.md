@@ -13,7 +13,7 @@ poetry add cq-queryabolt
 
 To create a simple box with a bolt hole and a nutcatch:
 ```py
-import queryabolt
+import cq_queryabolt
 import cadquery as cq
 
 class Workplane(queryabolt.WorkplaneMixin, cq.Workplane):
